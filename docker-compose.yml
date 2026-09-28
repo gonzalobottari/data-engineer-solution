@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  source_db:
+    image: postgres:15-alpine
+    container_name: fundo_source_db
+    environment:
+      POSTGRES_USER: fundo
+      POSTGRES_PASSWORD: fundo123
+      POSTGRES_DB: fundo_operational
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./source_db/init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./source_db/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fundo -d fundo_operational"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
